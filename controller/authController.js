@@ -32,7 +32,8 @@ const signupController = async (req, res, next) => {
     );
     res.json({ message: "signup successfully", data: saveUser, token });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    err.status = 500;
+    next(err);
   }
 };
 
@@ -45,7 +46,7 @@ const loginController = async (req, res, next) => {
     });
 
     // If user not found
-    if (!findUser) {
+    if (!findUser && findUser.length > 0) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -67,6 +68,7 @@ const loginController = async (req, res, next) => {
         expiresIn: "1h",
       }
     );
+
     // Response
     res.status(200).json({
       message: "Login successful",
@@ -74,15 +76,15 @@ const loginController = async (req, res, next) => {
       token,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error! Something went wrong." });
+    error.status = 500;
+    next(error);
   }
 };
 
 //  >======||  GET ALL USER ||========
 const getAllUser = async (req, res, next) => {
-  console.log(req.user);
   try {
+    console.log(req.user);
     const allUser = await UserModel.find();
 
     res.status(201).json(allUser);
