@@ -2,11 +2,15 @@ const { model, Schema } = require("mongoose");
 
 const userModel = new Schema(
   {
-    username: {
+    firstName: {
       type: String,
       required: true,
       trim: true,
       maxlength: 20,
+    },
+    lastName: {
+      type: String,
+      trim: true,
     },
     email: {
       type: String,
@@ -17,8 +21,6 @@ const userModel = new Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 15,
-      minlength: 9,
     },
     password: {
       type: String,

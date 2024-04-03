@@ -13,7 +13,6 @@ exports.resultsValidator = (req) => {
 };
 
 exports.signupValidator = [
-  check("username").not().notEmpty().withMessage("username is required"),
   // .custom((val) => /[^A-za-z0-9\s]/g.test(val))
   // .withMessage("Username not use unique characters"),
   check("email")

@@ -1,9 +1,14 @@
 const authRoutes = require("./authRoutes");
+const supplierRoute = require("./supplierRoutes");
 
 const routes = [
   {
     path: "/auth",
     handler: authRoutes,
+  },
+  {
+    path: "/supplier",
+    handler: supplierRoute,
   },
   {
     path: "/",

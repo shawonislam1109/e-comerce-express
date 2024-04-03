@@ -5,13 +5,15 @@ const jwt = require("jsonwebtoken");
 //  > ====== SIGN UP CONTROLLER ==========
 const signupController = async (req, res, next) => {
   try {
-    const { username, email, password, phoneNumber, profilePic } = req.body;
+    const { firstName, lastName, email, password, phoneNumber, profilePic } =
+      req.body;
 
     const salt = await bcrypt.genSalt(15);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const createUser = new UserModel({
-      username,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       phoneNumber,
@@ -22,7 +24,7 @@ const signupController = async (req, res, next) => {
 
     let token = jwt.sign(
       {
-        username: saveUser.username,
+        firstName: saveUser.firstName,
         userId: saveUser._id,
       },
       process.env.SECRET_KEY,
@@ -30,8 +32,16 @@ const signupController = async (req, res, next) => {
         expiresIn: "1h",
       }
     );
-    res.json({ message: "signup successfully", data: saveUser, token });
+
+    // findData
+    const findUserData = await UserModel.findOne(
+      { email },
+      { password: 0, _v: 0, confirmPassword: 0 }
+    );
+
+    res.json({ message: "signup successfully", data: findUserData, token });
   } catch (err) {
+    console.log(err);
     err.status = 500;
     next(err);
   }
@@ -46,7 +56,7 @@ const loginController = async (req, res, next) => {
     });
 
     // If user not found
-    if (!findUser && findUser.length > 0) {
+    if (!findUser) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -60,22 +70,30 @@ const loginController = async (req, res, next) => {
     // JWT token generation
     let token = jwt.sign(
       {
-        username: findUser.username,
+        firstName: findUser.firstName,
         userId: findUser._id,
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: "1h",
+        expiresIn: "24h",
       }
     );
 
+    // get user data
+    const findUserData = await UserModel.findOne(
+      {
+        $or: [{ email }, { phoneNumber }],
+      },
+      { password: 0, _v: 0 }
+    );
     // Response
     res.status(200).json({
       message: "Login successful",
-      data: findUser,
+      data: findUserData,
       token,
     });
   } catch (error) {
+    console.log(error);
     error.status = 500;
     next(error);
   }
