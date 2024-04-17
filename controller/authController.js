@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const UserModel = require("../model/User");
 const jwt = require("jsonwebtoken");
+const validationError = require("../utils/validationError");
 
 //  > ====== SIGN UP CONTROLLER ==========
 const signupController = async (req, res, next) => {
@@ -26,6 +27,7 @@ const signupController = async (req, res, next) => {
       {
         firstName: saveUser.firstName,
         userId: saveUser._id,
+        role: "admin",
       },
       process.env.SECRET_KEY,
       {
@@ -40,9 +42,15 @@ const signupController = async (req, res, next) => {
     );
 
     res.json({ message: "signup successfully", data: findUserData, token });
-  } catch (err) {
-    console.log(err);
-    err.status = 500;
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      const validation = validationError(error);
+      if (validation) {
+        return res.status(403).json(validation);
+      }
+    }
+    console.log(error);
+    error.status = 500;
     next(err);
   }
 };
@@ -72,6 +80,7 @@ const loginController = async (req, res, next) => {
       {
         firstName: findUser.firstName,
         userId: findUser._id,
+        role: findUser?.role,
       },
       process.env.SECRET_KEY,
       {

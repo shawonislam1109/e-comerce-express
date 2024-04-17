@@ -18,11 +18,18 @@ const storeSchema = new Schema(
       enum: ["Open", "Closed"],
       default: "Open",
     },
-    manager: {
+    location: {
+      type: String,
+      enum: {
+        values: ["Dhaka", "Tangail", "Rajshahi", "Dinajpur"],
+        message: "unit value can't be {value}",
+      },
+    },
+    employee: {
       name: String,
       contactNumber: String,
       id: ObjectId,
-      // ref:'User'
+      ref: "User",
     },
   },
   {

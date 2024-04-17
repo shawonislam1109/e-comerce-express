@@ -50,6 +50,7 @@ const supplierSchema = mongoose.Schema(
     tradeNumber: {
       type: String,
       required: [true, "Please provide your trade licence number"],
+      unique: true,
     },
 
     presentAddress: {

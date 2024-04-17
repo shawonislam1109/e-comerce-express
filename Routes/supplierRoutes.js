@@ -1,10 +1,8 @@
-const {
-  supplierController,
-} = require("../controller/supplier/supplierController");
+const { createSupplier } = require("../controller/supplier/supplierController");
 const { jwtVerify } = require("../middleware/jwtMiddleware");
 
 const supplierRoute = require("express").Router();
 
-supplierRoute.post("", jwtVerify, supplierController);
+supplierRoute.post("", jwtVerify, createSupplier);
 
 module.exports = supplierRoute;

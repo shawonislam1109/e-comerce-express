@@ -1,7 +1,7 @@
 const Supplier = require("../../model/supplier");
 const validationError = require("../../utils/validationError");
 
-const supplierController = async (req, res, next) => {
+const createSupplier = async (req, res, next) => {
   const {
     name,
     email,
@@ -33,15 +33,21 @@ const supplierController = async (req, res, next) => {
     const saveDataBase = await supplier.save();
     res.json({ message: "successFully ", data: saveDataBase });
   } catch (error) {
-    if (Object.keys(error).length > 0) {
+    if (error.name === "ValidationError") {
       const validation = validationError(error);
       if (validation) {
         return res.status(403).json(validation);
       }
+    } else if (error.code === 11000 && error.keyPattern) {
+      return res
+        .status(409)
+        .json({ message: "Email address is already in use" });
     }
     error.status = 500;
     next(error);
   }
 };
 
-module.exports = { supplierController };
+const updateSupplier = async (req, res, next) => {};
+
+module.exports = { createSupplier, updateSupplier };

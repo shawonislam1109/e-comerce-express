@@ -67,15 +67,9 @@ const stockSchema = new Schema(
       },
     ],
     brand: {
-      name: {
-        type: String,
-        required: true,
-      },
-      id: {
-        type: ObjectId,
-        ref: "brand",
-        required: true,
-      },
+      type: [ObjectId],
+      ref: "brand",
+      required: true,
     },
     status: {
       type: String,
@@ -86,31 +80,13 @@ const stockSchema = new Schema(
       },
     },
     store: {
-      name: {
-        type: String,
-        trim: true,
-        required: [true, "Please provide a store name"],
-        unique: true,
-        lowercase: true,
-      },
-      id: {
-        type: ObjectId,
-        required: true,
-        ref: "store",
-      },
+      type: ObjectId,
+      required: true,
+      ref: "store",
     },
-    suppliedBy: {
-      name: {
-        type: String,
-        trim: true,
-        required: [true, "Please provide a store name"],
-        unique: true,
-        lowercase: true,
-      },
-      id: {
-        type: ObjectId,
-        ref: "supplier",
-      },
+    supplier: {
+      type: ObjectId,
+      ref: "supplier",
     },
   },
 

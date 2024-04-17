@@ -13,10 +13,12 @@ const productItemSchema = new Schema(
       minLength: [3, "name must be at least 3 character"],
       maxLength: [20],
     },
+
     description: {
       type: String,
       required: true,
     },
+
     unit: {
       type: String,
       required: true,
@@ -30,18 +32,22 @@ const productItemSchema = new Schema(
       type: ObjectId,
       ref: "product",
     },
+
     createdAt: {
       type: Date,
       default: Date.now,
     },
+
     updatedAt: {
       type: Date,
       default: Date.now,
     },
+
     supplier: {
       type: ObjectId,
       ref: "supplier",
     },
+
     category: [
       {
         name: {
@@ -53,19 +59,9 @@ const productItemSchema = new Schema(
     ],
 
     brand: {
-      name: {
-        type: String,
-        required: true,
-      },
-      id: {
-        type: ObjectId,
-        ref: "Brand",
-        required: true,
-      },
-    },
-    supplier: {
-      type: ObjectId,
-      ref: "supplier",
+      type: [ObjectId],
+      ref: "Brand",
+      required: true,
     },
   },
   {
@@ -73,6 +69,6 @@ const productItemSchema = new Schema(
   }
 );
 
-const ProductItems = mongoose.model("supplier", productItemSchema);
+const ProductItems = mongoose.model("productItems", productItemSchema);
 
 module.exports = ProductItems;

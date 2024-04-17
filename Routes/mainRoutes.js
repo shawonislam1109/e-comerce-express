@@ -1,4 +1,6 @@
 const authRoutes = require("./authRoutes");
+const brandRoutes = require("./brandRoutes");
+const productRoutes = require("./productRoutes");
 const supplierRoute = require("./supplierRoutes");
 
 const routes = [
@@ -9,6 +11,14 @@ const routes = [
   {
     path: "/supplier",
     handler: supplierRoute,
+  },
+  {
+    path: "/product",
+    handler: productRoutes,
+  },
+  {
+    path: "/brand",
+    handler: brandRoutes,
   },
   {
     path: "/",

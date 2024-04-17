@@ -1,5 +1,14 @@
-const productController = (req, res, next) => {
-  const {} = req.body;
+const productAddController = (req, res, next) => {
+  const {
+    name,
+    description,
+    unit,
+    totalPrice,
+    discount,
+    supplier,
+    category,
+    brand,
+  } = req.body;
 };
 
-export { productController };
+module.exports = { productAddController };
