@@ -2,15 +2,33 @@ const bcrypt = require("bcrypt");
 const UserModel = require("../model/User");
 const jwt = require("jsonwebtoken");
 const validationError = require("../utils/validationError");
+const Branch = require("../Branch/BranchSchma");
 
 //  > ====== SIGN UP CONTROLLER ==========
 const signupController = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, phoneNumber, profilePic } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      phoneNumber,
+      profilePic,
+      companyName,
+      location,
+    } = req.body;
 
     const salt = await bcrypt.genSalt(15);
     const hashedPassword = await bcrypt.hash(password, salt);
+
+    // create branch
+    const branch = new Branch({
+      name: companyName,
+      location: location,
+    });
+
+    // find  branch
+    const branchSaveInDatabase = await branch.save();
 
     const createUser = new UserModel({
       firstName,
@@ -19,7 +37,18 @@ const signupController = async (req, res, next) => {
       password: hashedPassword,
       phoneNumber,
       profilePic,
+      role: "merchant",
+      branch: branchSaveInDatabase._id,
+      location: location,
     });
+
+    await Branch.findOneAndUpdate(
+      {
+        _id: branchSaveInDatabase._id,
+      },
+      { $set: { merchant: createUser._id } },
+      { new: true }
+    );
 
     const saveUser = await createUser.save();
 
@@ -27,11 +56,11 @@ const signupController = async (req, res, next) => {
       {
         firstName: saveUser.firstName,
         userId: saveUser._id,
-        role: "admin",
+        role: "merchant",
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: "1h",
+        expiresIn: "7d",
       }
     );
 
@@ -84,7 +113,7 @@ const loginController = async (req, res, next) => {
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: "24h",
+        expiresIn: "7d",
       }
     );
 

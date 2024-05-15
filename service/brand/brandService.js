@@ -14,6 +14,7 @@ const Brand = require("../../model/Brand");
  * @param {object} res - The response object.
  * @returns {Promise<object>} A Promise that resolves to the saved brand object.
  * @throws {Error} If there is an error saving the brand to the database.
+ *
  */
 const brandAddService = async (req, res) => {
   const { name, email, website, location, suppliers, status } = req.body;
