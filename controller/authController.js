@@ -3,6 +3,7 @@ const UserModel = require("../model/User");
 const jwt = require("jsonwebtoken");
 const validationError = require("../utils/validationError");
 const Branch = require("../Branch/BranchSchma");
+const ProfileSchema = require("../src/profile/profileSchema");
 
 //  > ====== SIGN UP CONTROLLER ==========
 const signupController = async (req, res, next) => {
@@ -51,6 +52,24 @@ const signupController = async (req, res, next) => {
     );
 
     const saveUser = await createUser.save();
+
+    // create profile
+    const profile = new ProfileSchema({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      phoneNumber,
+      profilePic,
+      role: saveUser.role,
+      merchant: saveUser._id,
+      profile: saveUser._id,
+      branch: branchSaveInDatabase._id,
+      location: location,
+    });
+
+    await profile.save();
+    // end profile save in database
 
     let token = jwt.sign(
       {
