@@ -1,9 +1,9 @@
-const branchRoute = require("../Branch/barnchRoute");
+const branchRoutes = require("../src/Branch/branchRoutes");
+const brandRoutes = require("../src/Brand/routes");
+const authRoutes = require("../src/auth/routes");
+const productRoutes = require("../src/product/routes");
 const profileRoute = require("../src/profile/profileRoute");
-const authRoutes = require("./authRoutes");
-const brandRoutes = require("./brandRoutes");
-const productRoutes = require("./productRoutes");
-const supplierRoute = require("./supplierRoutes");
+const supplierRoute = require("../src/supplier/routes");
 
 const routes = [
   {
@@ -24,7 +24,7 @@ const routes = [
   },
   {
     path: "/branches",
-    handler: branchRoute,
+    handler: branchRoutes,
   },
   {
     path: "/profile",

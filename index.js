@@ -7,6 +7,7 @@ const app = express();
 const setRouters = require("./Routes/mainRoutes");
 const setMiddleware = require("./middleware/mainMiddleware");
 const setErrorHandler = require("./errorHandler/errorHandler");
+const Supplier = require("./model/supplier");
 
 // Usings middleware from middleware directory
 setMiddleware(app);
@@ -23,6 +24,7 @@ const port = process.env.PORT || 9191;
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
+    // Supplier.ensureIndexes();
     app.listen(port, () => {
       console.log(`Server Running on port ${port}`);
     });

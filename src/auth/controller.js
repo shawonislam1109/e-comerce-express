@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
-const UserModel = require("../model/User");
+
 const jwt = require("jsonwebtoken");
-const validationError = require("../utils/validationError");
-const Branch = require("../Branch/BranchSchma");
-const ProfileSchema = require("../src/profile/profileSchema");
+const Branch = require("../Branch/branchSchema");
+const UserModel = require("../../model/User");
+const validationError = require("../../utils/validationError");
 
 //  > ====== SIGN UP CONTROLLER ==========
 const signupController = async (req, res, next) => {
@@ -89,7 +89,15 @@ const signupController = async (req, res, next) => {
       { password: 0, _v: 0, confirmPassword: 0 }
     );
 
-    res.json({ message: "signup successfully", data: findUserData, token });
+    // -> FIND BRANCH
+    const findBranch = await Branch.find({ merchant: findUserData._id });
+
+    res.json({
+      message: "signup successfully",
+      data: findUserData,
+      token,
+      branches: findBranch,
+    });
   } catch (error) {
     if (error.name === "ValidationError") {
       const validation = validationError(error);
@@ -143,11 +151,16 @@ const loginController = async (req, res, next) => {
       },
       { password: 0, _v: 0 }
     );
+
+    // -> FIND BRANCH
+    const findBranch = await Branch.find({ merchant: findUserData._id });
+
     // Response
     res.status(200).json({
       message: "Login successful",
       data: findUserData,
       token,
+      branches: findBranch,
     });
   } catch (error) {
     console.log(error);

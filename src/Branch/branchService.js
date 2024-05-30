@@ -1,5 +1,5 @@
-const validationError = require("../utils/validationError");
-const Branch = require("./BranchSchma");
+const validationError = require("../../utils/validationError");
+const Branch = require("./branchSchema");
 
 // create branch service
 const createBranchService = async (req, res, next) => {

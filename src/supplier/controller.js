@@ -1,6 +1,8 @@
 const Supplier = require("../../model/supplier");
 const validationError = require("../../utils/validationError");
 
+const { serviceGetSupplier } = require("./service");
+
 const createSupplier = async (req, res, next) => {
   const {
     name,
@@ -28,6 +30,8 @@ const createSupplier = async (req, res, next) => {
       imageURL,
       nationalIdImageURL,
       status,
+      branch: req.headers.branch,
+      roleBy: req.user.userId,
     });
 
     const saveDataBase = await supplier.save();
@@ -50,4 +54,39 @@ const createSupplier = async (req, res, next) => {
 
 const updateSupplier = async (req, res, next) => {};
 
-module.exports = { createSupplier, updateSupplier };
+// get supplier
+const getSuppliers = async (req, res) => {
+  try {
+    const branch = req.headers.branch;
+    const merchant = req.user.userId;
+
+    // Validate that branch and merchant are not undefined or null
+    if (!branch || !merchant) {
+      return res
+        .status(400)
+        .json({ error: "Branch and merchant must be provided" });
+    }
+
+    // Perform the query
+    const findSupplier = await Supplier.find({
+      branch: branch,
+      roleBy: merchant,
+    }).lean();
+
+    // Check if suppliers were found
+    if (!findSupplier.length) {
+      return res.status(404).json({ message: "No suppliers found", data: [] });
+    }
+
+    // Return the found suppliers
+    res.status(200).json({ data: findSupplier });
+  } catch (error) {
+    // Handle any errors that occur during the operation
+    console.error("Error finding suppliers:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while finding suppliers" });
+  }
+};
+
+module.exports = { createSupplier, updateSupplier, getSuppliers };

@@ -1,8 +1,5 @@
-const {
-  brandAddController,
-  brandUpdateController,
-} = require("../controller/brand/brandController");
-const { jwtVerify } = require("../middleware/jwtMiddleware");
+const { jwtVerify } = require("../../middleware/jwtMiddleware");
+const { brandAddController, brandUpdateController } = require("./controller");
 
 const brandRoutes = require("express").Router();
 

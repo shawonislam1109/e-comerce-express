@@ -1,8 +1,5 @@
-const {
-  brandAddService,
-  brandUpdateService,
-} = require("../../service/brand/brandService");
 const validationError = require("../../utils/validationError");
+const { brandAddService, brandUpdateService } = require("./service");
 
 const brandAddController = async (req, res, next) => {
   try {

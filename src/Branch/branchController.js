@@ -1,4 +1,4 @@
-const Branch = require("./BranchSchma");
+const Branch = require("./branchSchema");
 const { createBranchService, updateBranchService } = require("./branchService");
 
 // create controller
