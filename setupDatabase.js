@@ -4,18 +4,22 @@ require("dotenv").config();
 // Import other models as needed
 // const AnotherModel = require("./models/AnotherModel");
 
-async function setupDatabase() {
+async function setupDatabase(app) {
   try {
-    const mongodb = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("Connected to MongoDB");
+    const mongodb = await mongoose
+      .connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
+      .then(() => {
+        Supplier.ensureIndexes();
+        app.listen(port, () => {
+          console.log(`Server Running on port ${port}`);
+        });
+      });
 
     // Ensure indexes for each model
-    await Supplier.ensureIndexes();
-    console.log("Indexes ensured for Supplier model");
-
+    // await Supplier.ensureIndexes();
     return mongodb;
 
     // Ensure indexes for other models
@@ -28,4 +32,4 @@ async function setupDatabase() {
   }
 }
 
-module.exports = setupDatabase;
+module.exports = { setupDatabase };

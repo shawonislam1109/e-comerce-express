@@ -22,7 +22,6 @@ exports.signupValidator = [
     .withMessage("Invalid email address")
     .custom(async (email) => {
       let user = await UserModel.findOne({ email });
-      console.log(user);
       if (user) {
         return Promise.reject("email all ready is use");
       }
@@ -42,7 +41,6 @@ exports.signupValidator = [
     .withMessage("max number will be 15")
     .custom(async (phoneNumber) => {
       let findPhoneNumber = await UserModel.findOne({ phoneNumber });
-      console.log(findPhoneNumber);
       if (findPhoneNumber) {
         return Promise.reject("phone number is already use");
       }

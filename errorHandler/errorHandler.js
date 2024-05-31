@@ -16,6 +16,12 @@ module.exports = (app) => {
       case 500: {
         return res.json({ message: "Internal server Error" });
       }
+      case error.code === 11000: {
+        const field = Object.keys(error.keyPattern)[0];
+        console.log("errorHandler", field);
+        const message = `${field} already exists.`;
+        return res.status(409).send({ error: message });
+      }
       default: {
         return res.json({ message: error.message });
       }

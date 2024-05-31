@@ -8,6 +8,7 @@ const setRouters = require("./Routes/mainRoutes");
 const setMiddleware = require("./middleware/mainMiddleware");
 const setErrorHandler = require("./errorHandler/errorHandler");
 const Supplier = require("./model/supplier");
+const { setupDatabase } = require("./setupDatabase");
 
 // Usings middleware from middleware directory
 setMiddleware(app);
@@ -21,8 +22,12 @@ setErrorHandler(app);
 const port = process.env.PORT || 9191;
 
 // connect mongoose
+// setupDatabase(app);
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     // Supplier.ensureIndexes();
     app.listen(port, () => {
