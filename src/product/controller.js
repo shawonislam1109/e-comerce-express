@@ -1,14 +1,63 @@
-const productAddController = (req, res, next) => {
-  const {
-    name,
-    description,
-    unit,
-    totalPrice,
-    discount,
-    supplier,
-    category,
-    brand,
-  } = req.body;
+const {
+  productAddService,
+  serviceGetProducts,
+  getProductById,
+  productUpdateService,
+} = require("./service");
+
+// -> GET PRODUCTS
+const getProducts = async (req, res, next) => {
+  try {
+    const { findProducts, totalDocument, currentPage, totalPages } =
+      await serviceGetProducts(req, res, next);
+    // response product
+
+    res.status(200).json({
+      data: { data: findProducts, totalDocument, currentPage, totalPages },
+    });
+  } catch (error) {}
 };
 
-module.exports = { productAddController };
+// -> GET PRODUCT BY ID
+const productById = async (req, res, next) => {
+  try {
+    const product = await getProductById(req, res, next);
+
+    // response
+    res.status(200).json({ data: product });
+  } catch (error) {}
+};
+
+// -> PRODUCT ADD CONTROLLER
+const productAddController = async (req, res, next) => {
+  try {
+    const productAdd = await productAddService(req, res, next);
+    // res
+    res
+      .status(201)
+      .json({ message: "Product added successfully", data: productAdd });
+  } catch (error) {
+    error.status = 500;
+    next(error);
+  }
+};
+
+// => PRODUCT UPDATE CONTROLLER
+const productUpdate = async (req, res, next) => {
+  try {
+    const product = await productUpdateService(req, res, next);
+    //  res product update
+    res
+      .status(201)
+      .json({ data: product, message: "Product update successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  productAddController,
+  getProducts,
+  productById,
+  productUpdate,
+};

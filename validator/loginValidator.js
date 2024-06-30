@@ -1,17 +1,6 @@
 const { validationResult, check } = require("express-validator");
 const UserModel = require("../model/User");
 
-exports.resultsValidator = (req) => {
-  const messages = [];
-  if (!validationResult(req).isEmpty()) {
-    const errors = validationResult(req).array();
-    for (const i of errors) {
-      messages.push(i);
-    }
-  }
-  return messages;
-};
-
 exports.loginValidator = [
   check("password").notEmpty().withMessage("Password is required"),
   // Custom validation function to check either email or phone number is provided

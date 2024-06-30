@@ -1,6 +1,7 @@
 const branchRoutes = require("../src/Branch/branchRoutes");
 const brandRoutes = require("../src/Brand/routes");
 const authRoutes = require("../src/auth/routes");
+const categoryRoutes = require("../src/product/product-schema-category/category/routes");
 const productRoutes = require("../src/product/routes");
 const profileRoute = require("../src/profile/profileRoute");
 const supplierRoute = require("../src/supplier/routes");
@@ -29,6 +30,10 @@ const routes = [
   {
     path: "/profile",
     handler: profileRoute,
+  },
+  {
+    path: "/category",
+    handler: categoryRoutes,
   },
   {
     path: "/",
