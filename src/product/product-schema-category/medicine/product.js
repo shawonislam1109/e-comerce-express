@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const productQuantitySchema = require("./productQuantity");
 const purchasePriceSchema = require("./purchasePrice");
 const salePriceSchema = require("./salePrice");
+const eachProductQuantity = require("./eachProductQuantity");
 const { ObjectId } = mongoose.Schema.Types;
 const Schema = mongoose.Schema;
 
@@ -46,6 +47,7 @@ const productSchema = new Schema(
       },
     },
 
+    eachProductQuantity: eachProductQuantity,
     productQuantity: productQuantitySchema,
     purchasePrice: purchasePriceSchema,
     salePrice: salePriceSchema,

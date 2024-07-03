@@ -4,6 +4,7 @@ const authRoutes = require("../src/auth/routes");
 const categoryRoutes = require("../src/product/product-schema-category/category/routes");
 const productRoutes = require("../src/product/routes");
 const profileRoute = require("../src/profile/profileRoute");
+const stockRoutes = require("../src/stock/routes");
 const supplierRoute = require("../src/supplier/routes");
 
 const routes = [
@@ -18,6 +19,10 @@ const routes = [
   {
     path: "/product",
     handler: productRoutes,
+  },
+  {
+    path: "/stocks",
+    handler: stockRoutes,
   },
   {
     path: "/brand",

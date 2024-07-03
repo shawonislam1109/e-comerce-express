@@ -79,6 +79,20 @@ const productValidator = [
   // Conditional validation for productDetails based on the unit
 
   // Custom validation for unit specific fields
+  body("eachProductQuantity").custom((value, { req, res }) => {
+    const requiredFields = validateUnit(req?.body?.unit);
+    const missingFields = requiredFields.filter((field) => !value[field]);
+
+    if (missingFields.length > 0) {
+      const errors = errorFormatter(missingFields, "eachProductQuantity");
+      productsDetailsErrors = productsDetailsErrors.concat(errors);
+      throw new Error("Each Product Quantity errors");
+    }
+
+    // Return true to indicate validation passed
+    return true;
+  }),
+  // Custom validation for unit specific fields
   body("productQuantity").custom((value, { req, res }) => {
     const requiredFields = validateUnit(req?.body?.unit);
     const missingFields = requiredFields.filter((field) => !value[field]);

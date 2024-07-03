@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const productQuantitySchema = require("../product/product-schema-category/medicine/productQuantity");
+const eachProductQuantity = require("../product/product-schema-category/medicine/eachProductQuantity");
+const Product = require("../product/product-schema-category/medicine/product");
 
 const { ObjectId } = mongoose.Schema.Types;
 const Schema = mongoose.Schema;
@@ -45,9 +47,11 @@ const stockSchema = new Schema(
       },
     },
     productQuantity: productQuantitySchema,
-    productId: {
+    eachProductQuantity: eachProductQuantity,
+    product: {
       type: ObjectId,
       required: true,
+      ref: Product,
     },
     roleBy: {
       type: ObjectId,
