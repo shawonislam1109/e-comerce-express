@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const productQuantitySchema = require("../product/product-schema-category/medicine/productQuantity");
 const eachProductQuantity = require("../product/product-schema-category/medicine/eachProductQuantity");
 const Product = require("../product/product-schema-category/medicine/product");
+const purchasePriceSchema = require("../product/product-schema-category/medicine/purchasePrice");
+const salePriceSchema = require("../product/product-schema-category/medicine/salePrice");
 
 const { ObjectId } = mongoose.Schema.Types;
 const Schema = mongoose.Schema;
@@ -46,11 +48,12 @@ const stockSchema = new Schema(
         message: "Provide a valid value",
       },
     },
-    productQuantity: productQuantitySchema,
     eachProductQuantity: eachProductQuantity,
+    productQuantity: productQuantitySchema,
+    purchasePrice: purchasePriceSchema,
+    salePrice: salePriceSchema,
     product: {
       type: ObjectId,
-      required: true,
       ref: Product,
     },
     roleBy: {

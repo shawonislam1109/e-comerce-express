@@ -172,7 +172,6 @@ const loginController = async (req, res, next) => {
 //  >======||  GET ALL USER ||========
 const getAllUser = async (req, res, next) => {
   try {
-    console.log(req.user);
     const allUser = await UserModel.find();
 
     res.status(201).json(allUser);

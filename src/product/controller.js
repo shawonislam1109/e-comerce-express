@@ -31,11 +31,21 @@ const productById = async (req, res, next) => {
 // -> PRODUCT ADD CONTROLLER
 const productAddController = async (req, res, next) => {
   try {
-    const productAdd = await productAddService(req, res, next);
+    const { stock, product } = await productAddService(req, res, next);
+
+    if (!product || !stock) {
+      return res
+        .status(500)
+        .json({ message: "Product or Stock creation failed" });
+    }
+
+    return res.status(201).json({
+      message: "Product added successfully",
+      data: product,
+      stock: stock,
+    });
+
     // res
-    res
-      .status(201)
-      .json({ message: "Product added successfully", data: productAdd });
   } catch (error) {
     error.status = 500;
     next(error);

@@ -18,7 +18,6 @@ module.exports = (app) => {
       }
       case error.code === 11000: {
         const field = Object.keys(error.keyPattern)[0];
-        console.log("errorHandler", field);
         const message = `${field} already exists.`;
         return res.status(409).send({ error: message });
       }

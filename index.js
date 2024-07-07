@@ -26,10 +26,9 @@ const port = process.env.PORT || 9191;
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // useUnifiedTopology: true,
   })
   .then(() => {
-    // Supplier.ensureIndexes();
     app.listen(port, () => {
       console.log(`Server Running on port ${port}`);
     });

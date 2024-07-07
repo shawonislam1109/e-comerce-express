@@ -16,6 +16,7 @@ const serviceGetProducts = async (req, res) => {
       roleBy: merchant,
       isTrash: false,
     })
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
 
@@ -119,17 +120,24 @@ const productAddService = async (req, res, next) => {
       productName,
       category,
       unit,
-      eachProductQuantity,
-      productQuantity,
+      eachProductQuantity: { ...eachProductQuantity },
+      productQuantity: { ...productQuantity },
+      purchasePrice: { ...purchasePrice },
+      salePrice: { ...salePrice },
       product: savedProduct?._id,
       roleBy: merchant,
       branch: branch,
     });
-
     await stock.save();
 
+    // FIND STOCK AND RESPONSE
+    const findStock = await Stock.findById(stock._id).populate({
+      path: "product",
+      select: "wholeSalePrice salePrice purchasePrice expDate",
+    });
+
     // @  return this service
-    return saveToBb;
+    return { product: saveToBb, stock: findStock };
 
     // console.log(req.body);
   } catch (error) {

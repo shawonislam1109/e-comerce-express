@@ -6,21 +6,25 @@ const eachProductQuantity = require("../product/product-schema-category/medicine
 const productQuantitySchema = require("../product/product-schema-category/medicine/productQuantity");
 const purchasePriceSchema = require("../product/product-schema-category/medicine/purchasePrice");
 const salePriceSchema = require("../product/product-schema-category/medicine/salePrice");
+const enums = require("../enum/enums");
+const PurchaseProductsDetails = require("./purchaseProductsDetailsSchema");
 const { ObjectId } = mongoose.Schema.Types;
 const Schema = mongoose.Schema;
 
 // product schema design
 const purchaseSchema = new Schema(
   {
-    eachProductQuantity: eachProductQuantity,
-    productQuantity: productQuantitySchema,
-    purchasePrice: purchasePriceSchema,
-    salePrice: salePriceSchema,
-
-    productId: [{ type: ObjectId, ref: Product }],
     wholeSalePrice: {
       type: Number,
       required: true,
+    },
+    productsId: [{ type: ObjectId }],
+    productDetails: [{ type: ObjectId }],
+    grandTotalPrice: {
+      type: Number,
+    },
+    totalDiscount: {
+      type: Number,
     },
     warranty: {
       type: String,
@@ -30,24 +34,29 @@ const purchaseSchema = new Schema(
     },
     expDate: {
       type: Date,
+    },
+    paymentMethod: {
+      type: String,
+      enum: {
+        values: enums.paymentMethod,
+        message: "Product Type value must be valid",
+      },
+    },
+    paymentStatus: {
+      type: String,
+      enum: {
+        values: enums.paymentStatus,
+        message: "Payment Status must be valid",
+      },
+    },
+    memoNo: {
+      type: String,
       required: true,
-    },
-    discount: {
-      type: Number,
-    },
-    totalPrice: {
-      type: Number,
-      required: [true, "Total Price is a required field"],
     },
     supplier: {
       type: ObjectId,
       required: true,
       ref: Supplier,
-    },
-    product: {
-      type: ObjectId,
-      required: true,
-      ref: Product,
     },
     brand: {
       type: ObjectId,
@@ -58,6 +67,9 @@ const purchaseSchema = new Schema(
     },
     branch: {
       type: ObjectId,
+    },
+    remarks: {
+      type: String,
     },
     isTrash: {
       type: Boolean,
