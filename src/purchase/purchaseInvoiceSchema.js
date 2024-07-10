@@ -1,29 +1,37 @@
 const mongoose = require("mongoose");
 const productQuantitySchema = require("../product/product-schema-category/medicine/productQuantity");
 const purchasePriceSchema = require("../product/product-schema-category/medicine/purchasePrice");
-const Product = require("../product/product-schema-category/medicine/product");
+const Purchase = require("./purchaseSchema");
+const PurchaseProductsDetails = require("./purchaseProductsDetailsSchema");
 const { ObjectId } = mongoose.Schema.Types;
 const Schema = mongoose.Schema;
 
 // product schema design
 const PurchaseInvoiceSchema = new Schema(
   {
-    productQuantity: productQuantitySchema,
-    purchasePrice: purchasePriceSchema,
-    productPurchase: { type: ObjectId, ref: Purchase },
-    product: [{ type: ObjectId, ref: Product }],
+    purchaseProducts: [{ type: ObjectId, ref: PurchaseProductsDetails }],
+    purchase: { type: ObjectId, ref: Purchase },
     totalDiscount: {
+      type: Number,
+    },
+    totalPrice: {
       type: Number,
     },
     grandTotal: {
       type: Number,
       required: [true, "Total Price is a required field"],
     },
+    tax: {
+      type: Number,
+    },
     paymentStatus: {
       type: String,
     },
     paymentMethod: {
       type: String,
+    },
+    provideBalance: {
+      type: Number,
     },
     due: {
       type: Number,

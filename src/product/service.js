@@ -25,7 +25,15 @@ const serviceGetProducts = async (req, res) => {
 
     // Check if Products were found
     if (!findProducts.length) {
-      return res.status(200).json({ message: "No Products found", data: [] });
+      return res.status(200).json({
+        message: "No Products found",
+        data: {
+          data: [],
+          totalPages: Math.ceil(count / limit),
+          currentPage: parseInt(page),
+          totalDocument: parseInt(count),
+        },
+      });
     }
 
     // Return the found Products

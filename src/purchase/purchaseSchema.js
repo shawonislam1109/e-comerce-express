@@ -18,6 +18,7 @@ const purchaseSchema = new Schema(
       type: Number,
       required: true,
     },
+
     productsId: [{ type: ObjectId }],
     productDetails: [{ type: ObjectId }],
     grandTotalPrice: {
@@ -25,6 +26,10 @@ const purchaseSchema = new Schema(
     },
     totalDiscount: {
       type: Number,
+    },
+    provideBalance: {
+      type: Number,
+      default: 0,
     },
     warranty: {
       type: String,

@@ -12,7 +12,6 @@ const validateUnit = (value) => {
       return ["pies", "pageUnit"];
     case "pageUnit":
       return ["pageUnit"];
-
     default:
       return [];
   }

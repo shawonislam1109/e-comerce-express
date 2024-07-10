@@ -5,6 +5,7 @@ const salePriceSchema = require("../product/product-schema-category/medicine/sal
 const Purchase = require("./purchaseSchema");
 const Product = require("../product/product-schema-category/medicine/product");
 const eachProductQuantity = require("../product/product-schema-category/medicine/eachProductQuantity");
+const enums = require("../enum/enums");
 const { ObjectId } = mongoose.Schema.Types;
 const Schema = mongoose.Schema;
 
@@ -23,6 +24,13 @@ const PurchaseProductsDetailsSchema = new Schema(
       amount: { type: Number },
       percentage: { type: Number },
     },
+    unit: {
+      type: String,
+      enum: {
+        values: enums.unit,
+        message: "Provide a valid value",
+      },
+    },
     expDate: {
       type: Date,
     },
@@ -32,6 +40,7 @@ const PurchaseProductsDetailsSchema = new Schema(
     gantry: {
       type: String,
     },
+    purchase: { type: ObjectId },
     product: { type: ObjectId, ref: Product },
     isTrash: {
       type: Boolean,

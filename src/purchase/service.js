@@ -1,3 +1,6 @@
+const validateUnit = require("../../utils/validateUnit");
+const Stock = require("../stock/stock");
+const PurchaseInvoice = require("./purchaseInvoiceSchema");
 const PurchaseProductsDetails = require("./purchaseProductsDetailsSchema");
 const Purchase = require("./purchaseSchema");
 const mongoose = require("mongoose");
@@ -8,15 +11,14 @@ const createPurchaseProductService = async (req, res, next) => {
   // session.startTransaction();
 
   try {
-    // Create PurchaseProductsDetails instances
-    const purchaseProductDetails = req?.body?.products?.map(
-      (item) =>
-        new PurchaseProductsDetails({
-          ...item,
-        })
-    );
+    const { products, productsId } = req.body;
 
-    // Save all purchaseProductDetails and get the saved instances
+    // Create PurchaseProductsDetails instances and save them
+    const purchaseProductDetails = products.map((item) => ({
+      ...item,
+      branch: req.headers.branch,
+      roleBy: req.user.userId,
+    }));
     const savedPurchaseProductDetails =
       await PurchaseProductsDetails.insertMany(purchaseProductDetails);
 
@@ -25,21 +27,94 @@ const createPurchaseProductService = async (req, res, next) => {
       (detail) => detail._id
     );
 
-    // Create the Purchase document with the product details IDs
+    // Create and save the Purchase document
     const purchaseProduct = new Purchase({
       ...req.body,
       branch: req.headers.branch,
       roleBy: req.user.userId,
       productDetails: productDetailsIds,
     });
-
-    // Save the Purchase document
     await purchaseProduct.save();
+
+    // Update savedPurchaseProductDetails with the purchase ID
+    await PurchaseProductsDetails.updateMany(
+      { _id: { $in: productDetailsIds } },
+      { purchase: purchaseProduct._id }
+    );
+
+    // STOCK UPDATE START
+
+    const stockUpdates = {};
+
+    productsId.forEach((productId) => {
+      const productFind = products.find((item) => item.product == productId);
+      validateUnit(productFind?.unit)?.forEach((unit) => {
+        if (!stockUpdates[productId]) {
+          stockUpdates[productId] = {};
+        }
+        stockUpdates[productId][unit] = productFind["productQuantity"][unit];
+      });
+    });
+
+    // Fetch all relevant stock records
+    const stocks = await Stock.find({ product: { $in: productsId } });
+
+    // Update the stock quantities
+    stocks.forEach((stock) => {
+      const update = stockUpdates[stock.product];
+      validateUnit(stock.unit).forEach((unit) => {
+        stock.productQuantity[unit] += update[unit];
+      });
+      stock.markModified("productQuantity");
+    });
+
+    // console.log(stocks);
+
+    // Save the updated stock records in batch
+    await Promise.all(stocks.map((stock) => stock.save()));
+
+    // STOCK UPDATE END
+
+    // Calculate the total price, tax, and discount for all products
+    const totalObject = purchaseProductDetails.reduce(
+      (acc, detail) => {
+        const { productQuantity, purchasePrice, unit, tax, discount } = detail;
+        validateUnit(unit)?.forEach((item) => {
+          acc.totalPrice += productQuantity[item] * purchasePrice[item];
+        });
+        acc.totalTax +=
+          (tax?.amount || 0) + (acc.totalPrice * (tax?.percentage || 0)) / 100;
+        acc.totalDiscount +=
+          (discount?.amount || 0) +
+          (acc.totalPrice * (discount?.percentage || 0)) / 100;
+
+        return acc;
+      },
+      { totalPrice: 0, totalTax: 0, totalDiscount: 0 }
+    );
+
+    // Create and save the PurchaseInvoice document
+    const newInvoice = new PurchaseInvoice({
+      purchase: purchaseProduct._id,
+      purchaseProducts: productDetailsIds,
+      totalPrice: totalObject.totalPrice,
+      grandTotal: totalObject.totalPrice + totalObject.totalTax,
+      totalDiscount:
+        totalObject.totalDiscount + (purchaseProduct?.totalDiscount || 0),
+      tax: totalObject.totalTax,
+      provideBalance: purchaseProduct?.provideBalance,
+      due:
+        totalObject.totalPrice +
+        totalObject.totalTax -
+        purchaseProduct?.provideBalance,
+      paymentMethod: purchaseProduct.paymentMethod,
+      paymentStatus: purchaseProduct.paymentStatus,
+    });
+    await newInvoice.save();
 
     // await session.commitTransaction();
     // session.endSession();
 
-    // Send the response
     res.status(201).json({
       message: "Purchase product created successfully",
       purchaseProduct,
