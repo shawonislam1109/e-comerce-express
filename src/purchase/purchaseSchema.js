@@ -73,6 +73,9 @@ const purchaseSchema = new Schema(
     branch: {
       type: ObjectId,
     },
+    date: {
+      type: Date,
+    },
     remarks: {
       type: String,
     },

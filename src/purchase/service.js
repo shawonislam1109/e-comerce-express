@@ -109,6 +109,8 @@ const createPurchaseProductService = async (req, res, next) => {
         purchaseProduct?.provideBalance,
       paymentMethod: purchaseProduct.paymentMethod,
       paymentStatus: purchaseProduct.paymentStatus,
+      branch: req.headers.branch,
+      roleBy: req.user.userId,
     });
     await newInvoice.save();
 

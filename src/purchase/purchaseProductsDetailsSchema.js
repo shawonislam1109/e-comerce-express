@@ -46,6 +46,12 @@ const PurchaseProductsDetailsSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    roleBy: {
+      type: ObjectId,
+    },
+    branch: {
+      type: ObjectId,
+    },
   },
   {
     timestamps: true,
