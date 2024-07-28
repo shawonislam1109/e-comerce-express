@@ -19,8 +19,8 @@ const purchaseSchema = new Schema(
       required: true,
     },
 
-    productsId: [{ type: ObjectId }],
-    productDetails: [{ type: ObjectId }],
+    productsId: [{ type: ObjectId, ref: Product }],
+    productDetails: [{ type: ObjectId, ref: PurchaseProductsDetails }],
     grandTotalPrice: {
       type: Number,
     },

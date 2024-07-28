@@ -5,6 +5,57 @@ const PurchaseProductsDetails = require("./purchaseProductsDetailsSchema");
 const Purchase = require("./purchaseSchema");
 const mongoose = require("mongoose");
 
+//  GET ALL SERVICE PRODUCTS
+const getAllServicePurchaseProduct = async (req, res, next) => {
+  // BRANCHES AND MERCHANT
+  const branch = req.headers.branch;
+  const merchant = req.user.userId;
+
+  // => PAGINATION QUERY
+  const { page, limit } = req.query;
+
+  try {
+    const findPurchaseProduct = await Purchase.find({
+      branch: branch,
+      roleBy: merchant,
+      isTrash: false,
+    })
+      .populate("productDetails")
+      .populate("productsId")
+      .sort({ createAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    // COUNT DOCUMENT
+    const count = await Purchase.countDocuments();
+
+    // Check if Products were found
+    if (!findPurchaseProduct.length) {
+      return res.status(200).json({
+        message: "No Products found",
+        data: {
+          data: [],
+          totalPages: Math.ceil(count / limit),
+          currentPage: parseInt(page),
+          totalDocument: parseInt(count),
+        },
+      });
+    }
+
+    // Return the found Products
+    return {
+      data: findPurchaseProduct,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+      totalDocument: parseInt(count),
+    };
+  } catch (error) {
+    // Handle any errors that occur during the operation
+    console.error("Error finding Products:", error);
+    res.status(500).json({ error: "An error occurred while finding Products" });
+  }
+};
+
 // purchase product create service
 const createPurchaseProductService = async (req, res, next) => {
   // const session = await mongoose.startSession();
@@ -117,10 +168,7 @@ const createPurchaseProductService = async (req, res, next) => {
     // await session.commitTransaction();
     // session.endSession();
 
-    res.status(201).json({
-      message: "Purchase product created successfully",
-      purchaseProduct,
-    });
+    return purchaseProduct;
   } catch (error) {
     // await session.abortTransaction();
     // session.endSession();
@@ -128,4 +176,4 @@ const createPurchaseProductService = async (req, res, next) => {
   }
 };
 
-module.exports = { createPurchaseProductService };
+module.exports = { createPurchaseProductService, getAllServicePurchaseProduct };

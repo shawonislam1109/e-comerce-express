@@ -1,7 +1,22 @@
-const { createPurchaseProductService } = require("./service");
+const {
+  createPurchaseProductService,
+  getAllServicePurchaseProduct,
+} = require("./service");
 
 // GET ALL PURCHASE PRODUCT
-const allGetPurchaseProduct = async (req, res, next) => {};
+const allGetPurchaseProduct = async (req, res, next) => {
+  try {
+    const productPurchaseData = await getAllServicePurchaseProduct(
+      req,
+      res,
+      next
+    );
+    res.status(201).json({ data: productPurchaseData });
+  } catch (error) {
+    error.status = 500;
+    next(error);
+  }
+};
 
 // CREATE PURCHASE
 const createPurchase = async (req, res, next) => {
@@ -12,7 +27,7 @@ const createPurchase = async (req, res, next) => {
       return res.status(500).json({ message: "Internal server error" });
     }
     res.status(201).json({
-      message: "purchase product create successfully ",
+      message: "Product Purchase successfully ",
       data: purchaseProduct,
     });
   } catch (error) {
