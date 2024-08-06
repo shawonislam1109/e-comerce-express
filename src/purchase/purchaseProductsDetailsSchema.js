@@ -34,6 +34,15 @@ const PurchaseProductsDetailsSchema = new Schema(
     expDate: {
       type: Date,
     },
+    totalPrice: {
+      type: Number,
+    },
+    totalDiscount: {
+      type: Number,
+    },
+    totalTax: {
+      type: Number,
+    },
     warranty: {
       type: String,
     },

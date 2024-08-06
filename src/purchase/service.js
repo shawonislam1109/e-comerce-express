@@ -56,6 +56,46 @@ const getAllServicePurchaseProduct = async (req, res, next) => {
   }
 };
 
+// SINGLE PRODUCT PURCHASE ID
+const getSingleProductPurchase = async (req, res, next) => {
+  // => PAGINATION QUERY
+  const { purchaseId } = req.params;
+  try {
+    const findPurchase = await Purchase.findById(purchaseId)
+      .populate({
+        path: "productDetails",
+        select:
+          "discount totalTax totalPrice totalDiscount eachProductQuantity productQuantity purchasePrice product salePrice tax unit",
+      })
+      .populate({
+        path: "productsId",
+        select: "productType productName",
+      });
+
+    return findPurchase;
+  } catch (error) {
+    error.status = 500;
+    next(error);
+  }
+};
+// SINGLE PRODUCT PURCHASE ID
+const getSingleProductPurchaseInvoice = async (req, res, next) => {
+  // => PAGINATION QUERY
+  const { purchaseId } = req.params;
+  try {
+    const findPurchase = await PurchaseInvoice.findOne({
+      purchase: purchaseId,
+    });
+
+    return findPurchase;
+  } catch (error) {
+    error.status = 500;
+    next(error);
+  }
+};
+
+//
+
 // purchase product create service
 const createPurchaseProductService = async (req, res, next) => {
   // const session = await mongoose.startSession();
@@ -65,11 +105,38 @@ const createPurchaseProductService = async (req, res, next) => {
     const { products, productsId } = req.body;
 
     // Create PurchaseProductsDetails instances and save them
-    const purchaseProductDetails = products.map((item) => ({
-      ...item,
-      branch: req.headers.branch,
-      roleBy: req.user.userId,
-    }));
+    const purchaseProductDetails = products.map((item) => {
+      let totalPrice = 0;
+      let totalDiscount = 0;
+      let totalTax = 0;
+
+      console.log("tax", item?.tax);
+      console.log("discount", item?.discount);
+      console.log("qyt", item?.productQuantity);
+      console.log("price", item?.purchasePrice);
+
+      // CALCULATION TOTAL PRICE AND DISCOUNT
+      for (const key in item?.productQuantity) {
+        totalPrice += item?.productQuantity[key] * item?.purchasePrice[key];
+      }
+      totalTax =
+        (item?.tax?.amount || 0) +
+        (totalPrice * (item?.tax?.percentage || 0)) / 100;
+      totalDiscount =
+        (item?.discount?.amount || 0) +
+        (totalPrice * (item?.tax?.percentage || 0)) / 100;
+      // CALCULATION TOTAL PRICE AND DISCOUNT
+
+      return {
+        ...item,
+        totalPrice,
+        totalDiscount,
+        totalTax,
+        branch: req.headers.branch,
+        roleBy: req.user.userId,
+      };
+    });
+
     const savedPurchaseProductDetails =
       await PurchaseProductsDetails.insertMany(purchaseProductDetails);
 
@@ -176,4 +243,9 @@ const createPurchaseProductService = async (req, res, next) => {
   }
 };
 
-module.exports = { createPurchaseProductService, getAllServicePurchaseProduct };
+module.exports = {
+  createPurchaseProductService,
+  getAllServicePurchaseProduct,
+  getSingleProductPurchase,
+  getSingleProductPurchaseInvoice,
+};
